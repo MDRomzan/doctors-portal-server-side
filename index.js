@@ -1,6 +1,7 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
 const cors =require("cors");
+const ObjectId=require("mongodb").ObjectId;
 const admin = require("firebase-admin");
 const app = express();
 require('dotenv').config()
@@ -56,6 +57,13 @@ async function run(){
             const cursor =appointmentsCollection.find(query);
             const appointments=await cursor.toArray();
             res.json(appointments); 
+        });
+        app.get("/appoitments/:id",async (req,res)=>{
+            const id= req.params.id;
+            const query={_id: ObjectId(id)};
+            const result=await appointmentsCollection.findOne(query);
+            console.log(result);
+            res.json(result);
         })
         // get email add
         app.get("/users/:email",async(req,res)=>{
@@ -75,6 +83,8 @@ async function run(){
             // console.log(result);
             res.json(result)
         });
+
+        // add databaseusers
         app.post("/users",async(req,res)=>{
             const user=req.body;
             const result=await usersCollection.insertOne(user);
